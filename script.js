@@ -195,6 +195,9 @@ function getURLParams(){
     return output;
 }
 
+//Only draw cards if there are cards specified
+var specified = false;
+
 //Get URL parameters
 var params = getURLParams();
 
@@ -202,20 +205,32 @@ var params = getURLParams();
 deck.init();
 
 //Filter by card IDs
-if(params["cards"] !== undefined) deck.filter("id", params["cards"].split("+"));
+if(params["cards"] !== undefined){
+	deck.filter("id", params["cards"].split("+"))
+	specified=true;
+}
 
 //Filter by card suits
-if(params["suits"] !== undefined) deck.filter("suit", params["suits"].split("+"));
+if(params["suits"] !== undefined){
+	deck.filter("suit", params["suits"].split("+"));
+	specified=true;
+}
 
 //Filter by card ranks
-if(params["ranks"] !== undefined) deck.filter("rank", params["ranks"].split("+").map((x) => Number(x)));
+if(params["ranks"] !== undefined){
+	deck.filter("rank", params["ranks"].split("+").map((x) => Number(x)));
+	specified=true;
+}
 
 
 //Limit the output number, if applicable
-if(params["limit"] !== undefined) deck.limit(Number(params["limit"]));
+if(params["limit"] !== undefined){
+	deck.limit(Number(params["limit"]));
+	specified=true;
+}
 
 //Sort the filtered cards, if applicable. This step must follow the limit step to preserve randomness in the drawn hand.
 if(location.search.includes("sorted")) deck.sort();
 
-//Draw the resulting cards
-deck.drawFiltered();
+//Draw the resulting cards, if applicable
+if(specified) deck.drawFiltered();
