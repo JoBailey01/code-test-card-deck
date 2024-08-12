@@ -179,3 +179,43 @@ const deck = new CardDeck(".deck", ".hand");
 
 // Take a look at the deck object and its methods.
 console.log(deck);
+
+/**
+ * Thanks to Bakudan's answer on this StackOverflow post: https://stackoverflow.com/questions/5448545/how-to-retrieve-get-parameters-from-javascript
+ * 
+ * This function parses URL parameters and returns them as a JS object.
+ */
+function getURLParams(){
+    var output = {};
+    var inputs = location.search.substring(1).split("&");
+    for(let i = 0;i < inputs.length;i++){
+        var strSplit = inputs[i].split("=");
+        output[strSplit[0]] = strSplit[1];
+    }
+    return output;
+}
+
+//Get URL parameters
+var params = getURLParams();
+
+//Ensure random output
+deck.init();
+
+//Filter by card IDs
+if(params["cards"] !== undefined) deck.filter("id", params["cards"].split("+"));
+
+//Filter by card suits
+if(params["suits"] !== undefined) deck.filter("suit", params["suits"].split("+"));
+
+//Filter by card ranks
+if(params["ranks"] !== undefined) deck.filter("rank", params["ranks"].split("+").map((x) => Number(x)));
+
+
+//Limit the output number, if applicable
+if(params["limit"] !== undefined) deck.limit(Number(params["limit"]));
+
+//Sort the filtered cards, if applicable. This step must follow the limit step to preserve randomness in the drawn hand.
+if(location.search.includes("sorted")) deck.sort();
+
+//Draw the resulting cards
+deck.drawFiltered();
